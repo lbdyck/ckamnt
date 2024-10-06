@@ -13,6 +13,7 @@
   | Author:    Lionel B. Dyck                                  |
   |                                                            |
   | History:  (most recent on top)                             |
+  |            2024/10/06 LBD - Report if not automounts       |
   |            2024/10/03 LBD - Creation                       |
   |                                                            |
   * ---------------------------------------------------------- */
@@ -24,6 +25,10 @@
   amt = s.0
   amd = strip(s.amt)'/'
   drop s. e.
+  if amd = '' then do
+      say 'No automounts detected.'
+      exit 0
+      end
   call get_mounted
   do i = 1 to s.0
     if wordpos('rw',s.i) = 0 then iterate
