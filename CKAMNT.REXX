@@ -13,6 +13,7 @@
   | Author:    Lionel B. Dyck                                  |
   |                                                            |
   | History:  (most recent on top)                             |
+  |            2024/10/07 LBD - Improve test if no automounts  |
   |            2024/10/06 LBD - Report if not automounts       |
   |            2024/10/03 LBD - Creation                       |
   |                                                            |
@@ -22,14 +23,15 @@
   env.0 = 2
   cmd = 'automount -q | grep /'
   x = bpxwunix(cmd,,s.,e.,env.)
-  amt = s.0
-  amd = strip(s.amt)'/'
-  drop s. e.
-  if amd = '' then do
+  if s.0 = 0 then do
       say 'No automounts detected.'
       exit 0
       end
+  amt = s.0
+  amd = strip(s.amt)'/'
+  drop s. e.
   call get_mounted
+  hits = 0
   do i = 1 to s.0
     if wordpos('rw',s.i) = 0 then iterate
     parse value s.i with filesystem mount .
@@ -39,8 +41,10 @@
       if pos('No information',as.ai) > 0 then iterate
       if pos('STATE:',as.ai) = 0 then iterate
       say 'Filesystem' left(filesystem,44) 'is automounted at' mount
+      hits = hits + 1
     end
   end
+  say hits 'automounted filesystems detected.'
   exit
 Get_Mounted:
   x = syscalls('ON')
